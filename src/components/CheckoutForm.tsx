@@ -1,0 +1,222 @@
+"use client";
+
+import { useState, useActionState } from "react";
+import { ShieldCheck, CreditCard, Info } from "lucide-react";
+import { createCheckoutSession } from "@/actions/checkout";
+import { SubmitButton } from "@/components/SubmitButton";
+import { formatCents } from "@/lib/utils";
+import { SERVICE_FEE_CENTS } from "@/lib/constants";
+
+interface TicketType {
+  id: string;
+  name: string;
+  priceCents: number;
+  capacity: number | null;
+  sold: number;
+}
+
+interface CheckoutFormProps {
+  eventId: string;
+  ticketTypes: TicketType[];
+}
+
+type FormState = { error?: string };
+
+async function checkoutAction(
+  _prev: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const result = await createCheckoutSession(formData);
+  return result ?? {};
+}
+
+export function CheckoutForm({ eventId, ticketTypes }: CheckoutFormProps) {
+  const [selectedTypeId, setSelectedTypeId] = useState(ticketTypes[0]?.id ?? "");
+  const [qty, setQty] = useState(1);
+  const [state, formAction, pending] = useActionState(checkoutAction, {});
+
+  const selectedType = ticketTypes.find((t) => t.id === selectedTypeId);
+  const ticketSubtotal = (selectedType?.priceCents ?? 0) * qty;
+  const serviceFeeTotal = SERVICE_FEE_CENTS * qty;
+  const total = ticketSubtotal + serviceFeeTotal;
+
+  const available =
+    selectedType?.capacity !== null && selectedType?.capacity !== undefined
+      ? selectedType.capacity - selectedType.sold
+      : 10;
+  const maxQty = Math.min(10, Math.max(1, available));
+
+  return (
+    <form action={formAction} className="space-y-6">
+      <input type="hidden" name="eventId" value={eventId} />
+
+      {/* Ticket Type */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Ticket Type</label>
+        <div className="space-y-2">
+          {ticketTypes.map((tt) => {
+            const avail = tt.capacity !== null ? tt.capacity - tt.sold : null;
+            const soldOut = avail !== null && avail <= 0;
+            return (
+              <label
+                key={tt.id}
+                className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  selectedTypeId === tt.id
+                    ? "border-brand bg-brand/5"
+                    : soldOut
+                    ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
+                    : "border-gray-200 hover:border-brand/50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="ticketTypeId"
+                    value={tt.id}
+                    checked={selectedTypeId === tt.id}
+                    onChange={() => !soldOut && setSelectedTypeId(tt.id)}
+                    disabled={soldOut}
+                    className="text-brand"
+                  />
+                  <div>
+                    <div className="font-medium text-gray-900">{tt.name}</div>
+                    {avail !== null && avail <= 10 && avail > 0 && (
+                      <div className="text-xs text-amber-600">Only {avail} left!</div>
+                    )}
+                    {soldOut && <div className="text-xs text-red-500">Sold out</div>}
+                  </div>
+                </div>
+                <div className="font-semibold text-brand">{formatCents(tt.priceCents)}</div>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Quantity */}
+      <div>
+        <label htmlFor="qty" className="block text-sm font-medium text-gray-700 mb-2">
+          Quantity
+        </label>
+        <select
+          id="qty"
+          name="qty"
+          value={qty}
+          onChange={(e) => setQty(Number(e.target.value))}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand"
+        >
+          {Array.from({ length: maxQty }, (_, i) => i + 1).map((n) => (
+            <option key={n} value={n}>
+              {n} ticket{n > 1 ? "s" : ""}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Customer Details */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="font-semibold text-gray-900">Your Details</h3>
+          <p className="text-sm text-gray-500 mt-0.5">
+            These details will be used to purchase your ticket from the vendor.
+          </p>
+        </div>
+        <div>
+          <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-1">
+            Full Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="customerName"
+            name="customerName"
+            type="text"
+            required
+            placeholder="As it should appear on the ticket"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand"
+          />
+        </div>
+        <div>
+          <label htmlFor="customerEmail" className="block text-sm font-medium text-gray-700 mb-1">
+            Email Address <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="customerEmail"
+            name="customerEmail"
+            type="email"
+            required
+            placeholder="The vendor will send your ticket here"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand"
+          />
+        </div>
+        <div>
+          <label htmlFor="customerPhone" className="block text-sm font-medium text-gray-700 mb-1">
+            Phone Number <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="customerPhone"
+            name="customerPhone"
+            type="tel"
+            required
+            placeholder="+359 88 123 4567"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand"
+          />
+        </div>
+      </div>
+
+      {/* Price Breakdown */}
+      <div className="bg-gray-50 rounded-xl border border-gray-200 p-5">
+        <h3 className="font-semibold text-gray-900 mb-4">Price Summary</h3>
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">
+              {selectedType?.name ?? "Ticket"} × {qty}
+            </span>
+            <span className="text-gray-900">{formatCents(ticketSubtotal)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600 flex items-center gap-1">
+              Service fee × {qty}
+              <span title="Per-ticket fee for our concierge purchasing service">
+                <Info className="w-3.5 h-3.5 text-gray-400" />
+              </span>
+            </span>
+            <span className="text-gray-900">{formatCents(serviceFeeTotal)}</span>
+          </div>
+          <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between font-semibold">
+            <span>Total</span>
+            <span className="text-brand text-lg">{formatCents(total)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Trust Signals */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="flex items-start gap-2 text-xs text-gray-500">
+          <ShieldCheck className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+          <span>Secure payment powered by Stripe. Your card details are never stored.</span>
+        </div>
+        <div className="flex items-start gap-2 text-xs text-gray-500">
+          <CreditCard className="w-4 h-4 text-brand flex-shrink-0 mt-0.5" />
+          <span>Ticket delivered directly to your email by the official vendor.</span>
+        </div>
+      </div>
+
+      {state?.error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+          {state.error}
+        </div>
+      )}
+
+      <SubmitButton
+        className="w-full py-4 text-base"
+        loadingText="Redirecting to payment..."
+      >
+        Pay securely with Stripe →
+      </SubmitButton>
+
+      <p className="text-xs text-center text-gray-400">
+        By completing this purchase you agree to our service terms. The{" "}
+        {formatCents(SERVICE_FEE_CENTS)} per-ticket service fee is non-refundable.
+      </p>
+    </form>
+  );
+}
