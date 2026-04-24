@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { AccountMenu } from "@/components/AccountMenu";
+import { CartIcon } from "@/components/CartIcon";
 import type { Locale } from "@/lib/translations";
 
 export function Navbar() {
@@ -43,6 +44,7 @@ export function Navbar() {
             ))}
           </div>
 
+          <CartIcon />
           <AccountMenu />
         </div>
       </nav>

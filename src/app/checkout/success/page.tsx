@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { CheckCircle, Mail, Clock, ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
 
 export default function CheckoutSuccessPage() {
   const { t } = useLanguage();
+  const { clearCart } = useCart();
   const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventor.bg";
+
+  useEffect(() => { clearCart(); }, [clearCart]);
 
   return (
     <>

@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
-import { MapPin, Calendar, ArrowLeft, Ticket, Share2, CalendarDays } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, Ticket, Share2, CalendarDays, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
 import { formatDateTime, formatCents } from "@/lib/utils";
 
 interface TicketType {
@@ -46,6 +47,7 @@ interface EventDetailContentProps {
 
 export function EventDetailContent({ event }: EventDetailContentProps) {
   const { t, locale } = useLanguage();
+  const { getQty, addItem, updateQty, totalItems } = useCart();
   const minPrice = event.ticketTypes[0]?.priceCents;
   const isFestivalHub = (event.subEvents?.length ?? 0) > 0;
 
@@ -88,13 +90,14 @@ export function EventDetailContent({ event }: EventDetailContentProps) {
               )}
             </div>
 
-            {/* Mobile buy button — only for non-hub events */}
-            {!isFestivalHub && event.ticketTypes.some((tt) => tt.capacity === null || tt.capacity - tt.sold > 0) && (
+            {/* Mobile cart button — only for non-hub events when cart has items */}
+            {!isFestivalHub && totalItems > 0 && (
               <Link
-                href={`/checkout/${event.id}`}
-                className="lg:hidden block w-full bg-brand text-white text-center font-semibold py-4 rounded-xl hover:bg-brand-800 transition-colors shadow-sm"
+                href="/checkout"
+                className="lg:hidden flex items-center justify-center gap-2 w-full bg-brand text-white text-center font-semibold py-4 rounded-xl hover:bg-brand-800 transition-colors shadow-sm"
               >
-                {t.event.getTickets}
+                <ShoppingCart className="w-4 h-4" />
+                {t.event.viewCart} ({totalItems})
               </Link>
             )}
 
@@ -172,36 +175,84 @@ export function EventDetailContent({ event }: EventDetailContentProps) {
               ) : (
                 <>
                   {event.ticketTypes.length > 0 ? (
-                    <div className="space-y-3 mb-6">
+                    <div className="space-y-3 mb-5">
                       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
                         {t.event.availableTickets}
                       </h3>
                       {event.ticketTypes.map((tt) => {
                         const available = tt.capacity !== null ? tt.capacity - tt.sold : null;
                         const soldOut = available !== null && available <= 0;
+                        const qty = getQty(tt.id);
+                        const maxQty = available !== null ? Math.min(available, 10) : 10;
                         return (
                           <div
                             key={tt.id}
-                            className={`flex items-center justify-between p-3 rounded-lg border ${
-                              soldOut ? "border-gray-200 bg-gray-50 opacity-60" : "border-gray-200 bg-gray-50"
+                            className={`p-3 rounded-lg border transition-colors ${
+                              soldOut
+                                ? "border-gray-200 bg-gray-50 opacity-60"
+                                : qty > 0
+                                ? "border-brand/40 bg-brand/5"
+                                : "border-gray-200 bg-gray-50"
                             }`}
                           >
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{tt.name}</div>
-                              {soldOut ? (
-                                <div className="text-xs text-red-500">{t.event.soldOut}</div>
-                              ) : available !== null && available <= 10 ? (
-                                <div className="text-xs text-amber-600">{t.event.left(available)}</div>
-                              ) : (
-                                <div className="text-xs text-green-600">{t.event.available}</div>
-                              )}
-                            </div>
-                            <div className="text-right">
-                              <div className="text-sm font-bold text-brand">
-                                {formatCents(tt.priceCents)}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium text-gray-900">{tt.name}</div>
+                                {soldOut ? (
+                                  <div className="text-xs text-red-500">{t.event.soldOut}</div>
+                                ) : available !== null && available <= 10 ? (
+                                  <div className="text-xs text-amber-600">{t.event.left(available)}</div>
+                                ) : (
+                                  <div className="text-xs text-green-600">{t.event.available}</div>
+                                )}
                               </div>
-                              <div className="text-xs text-gray-400">{t.event.perTicket}</div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="text-sm font-bold text-brand">{formatCents(tt.priceCents)}</div>
+                                <div className="text-xs text-gray-400">{t.event.perTicket}</div>
+                              </div>
                             </div>
+                            {!soldOut && (
+                              <div className="flex items-center gap-2 mt-2.5">
+                                <button
+                                  type="button"
+                                  onClick={() => updateQty(tt.id, qty - 1)}
+                                  disabled={qty === 0}
+                                  className="w-7 h-7 rounded-lg border border-gray-300 flex items-center justify-center text-gray-600 hover:border-brand hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <span className="w-6 text-center text-sm font-semibold text-gray-900">{qty}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (qty === 0) {
+                                      addItem({
+                                        ticketTypeId: tt.id,
+                                        eventId: event.id,
+                                        eventName: event.name,
+                                        eventSlug: event.slug,
+                                        ticketTypeName: tt.name,
+                                        priceCents: tt.priceCents,
+                                        startsAt: event.startsAt.toISOString(),
+                                        venue: event.venue,
+                                        city: event.city,
+                                      }, 1);
+                                    } else {
+                                      updateQty(tt.id, qty + 1);
+                                    }
+                                  }}
+                                  disabled={qty >= maxQty}
+                                  className="w-7 h-7 rounded-lg border border-gray-300 flex items-center justify-center text-gray-600 hover:border-brand hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                                {qty > 0 && (
+                                  <span className="text-xs text-brand font-medium ml-1">
+                                    {formatCents(tt.priceCents * qty)} {t.event.total}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -210,14 +261,13 @@ export function EventDetailContent({ event }: EventDetailContentProps) {
                     <p className="text-sm text-gray-500 mb-6">{t.event.noTickets}</p>
                   )}
 
-                  {event.ticketTypes.some(
-                    (tt) => tt.capacity === null || tt.capacity - tt.sold > 0
-                  ) && (
+                  {totalItems > 0 && (
                     <Link
-                      href={`/checkout/${event.id}`}
-                      className="block w-full bg-brand text-white text-center font-semibold py-4 rounded-xl hover:bg-brand-800 transition-colors shadow-sm"
+                      href="/checkout"
+                      className="flex items-center justify-center gap-2 w-full bg-brand text-white text-center font-semibold py-4 rounded-xl hover:bg-brand-800 transition-colors shadow-sm"
                     >
-                      {t.event.getTickets}
+                      <ShoppingCart className="w-4 h-4" />
+                      {t.event.viewCart} ({totalItems})
                     </Link>
                   )}
                 </>

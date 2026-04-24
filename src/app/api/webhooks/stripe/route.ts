@@ -25,107 +25,108 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
+    const meta = session.metadata ?? {};
 
-    const {
-      eventId,
-      ticketTypeId,
-      qty: qtyStr,
-      customerName,
-      customerEmail,
-      customerPhone,
-    } = session.metadata ?? {};
+    const { items: itemsMeta, customerName, customerEmail, customerPhone, customerCity, customerPostalCode, customerAddress } = meta;
 
-    if (!eventId || !ticketTypeId || !qtyStr || !customerName || !customerEmail || !customerPhone) {
+    if (!itemsMeta || !customerName || !customerEmail || !customerPhone) {
       console.error("Missing metadata in Stripe session", session.id);
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
     }
 
-    const qty = parseInt(qtyStr, 10);
+    // Idempotency: skip if already processed
+    const existing = await prisma.order.findFirst({ where: { stripeSessionId: session.id } });
+    if (existing) return NextResponse.json({ received: true });
 
-    const existing = await prisma.order.findUnique({
-      where: { stripeSessionId: session.id },
+    // Parse items: "ttId:qty|ttId:qty"
+    const cartItems = itemsMeta.split("|").map((part) => {
+      const [ticketTypeId, qtyStr] = part.split(":");
+      return { ticketTypeId, qty: parseInt(qtyStr, 10) };
     });
 
-    if (existing) {
-      return NextResponse.json({ received: true });
-    }
-
-    const [dbEvent, ticketType] = await Promise.all([
-      prisma.event.findUnique({ where: { id: eventId } }),
-      prisma.ticketType.findUnique({ where: { id: ticketTypeId } }),
-    ]);
-
-    if (!dbEvent || !ticketType) {
-      console.error("Event or ticket type not found for session", session.id);
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-
-    const amountTotal = session.amount_total ?? 0;
-    const serviceFeeCents = SERVICE_FEE_CENTS * qty;
+    const ticketTypeIds = cartItems.map((i) => i.ticketTypeId);
+    const ticketTypes = await prisma.ticketType.findMany({
+      where: { id: { in: ticketTypeIds } },
+      include: { event: true },
+    });
 
     const user = await prisma.user.findUnique({ where: { email: customerEmail } });
+    const amountTotal = session.amount_total ?? 0;
 
-    const order = await prisma.order.create({
-      data: {
-        eventId,
-        ticketTypeId,
-        qty,
-        totalCents: amountTotal,
-        serviceFeeCents,
-        customerName,
-        customerEmail,
-        customerPhone,
-        status: "PENDING_PURCHASE",
-        stripeSessionId: session.id,
-        userId: user?.id ?? null,
-      },
-    });
+    // Create one order per cart item and update sold counts
+    const createdOrders = await prisma.$transaction(
+      cartItems.map((item) => {
+        const tt = ticketTypes.find((t) => t.id === item.ticketTypeId)!;
+        return prisma.order.create({
+          data: {
+            eventId: tt.eventId,
+            ticketTypeId: item.ticketTypeId,
+            qty: item.qty,
+            totalCents: tt.priceCents * item.qty + SERVICE_FEE_CENTS * item.qty,
+            serviceFeeCents: SERVICE_FEE_CENTS * item.qty,
+            customerName,
+            customerEmail,
+            customerPhone,
+            status: "PENDING_PURCHASE",
+            stripeSessionId: session.id,
+            userId: user?.id ?? null,
+          },
+        });
+      })
+    );
 
-    await prisma.ticketType.update({
-      where: { id: ticketTypeId },
-      data: { sold: { increment: qty } },
+    await prisma.$transaction(
+      cartItems.map((item) =>
+        prisma.ticketType.update({
+          where: { id: item.ticketTypeId },
+          data: { sold: { increment: item.qty } },
+        })
+      )
+    );
+
+    // Build email item list
+    const emailItems = cartItems.map((item) => {
+      const tt = ticketTypes.find((t) => t.id === item.ticketTypeId)!;
+      return {
+        eventName: tt.event.name,
+        ticketTypeName: tt.name,
+        qty: item.qty,
+        priceCents: tt.priceCents,
+        serviceFeeCents: SERVICE_FEE_CENTS * item.qty,
+        eventDate: formatDateTime(tt.event.startsAt),
+        eventVenue: tt.event.venue,
+        eventCity: tt.event.city,
+      };
     });
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-    const eventDate = formatDateTime(dbEvent.startsAt);
     const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventor.bg";
     const adminEmail = process.env.ADMIN_EMAIL ?? "admin@eventor.bg";
+    const primaryOrderId = createdOrders[0]?.id ?? session.id;
 
     await Promise.allSettled([
       resend.emails.send({
         from: `Eventor BG <${supportEmail}>`,
         to: customerEmail,
-        subject: `Order Confirmed – ${dbEvent.name}`,
+        subject: `Order Confirmed – ${emailItems.map((i) => i.eventName).join(", ")}`,
         react: OrderConfirmation({
           customerName,
-          eventName: dbEvent.name,
-          ticketTypeName: ticketType.name,
-          qty,
+          items: emailItems,
           totalCents: amountTotal,
-          serviceFeeCents,
-          eventDate,
-          eventVenue: dbEvent.venue,
-          eventCity: dbEvent.city,
-          orderId: order.id,
+          orderId: primaryOrderId,
         }),
       }),
       resend.emails.send({
         from: `Eventor BG <${supportEmail}>`,
         to: adminEmail,
-        subject: `NEW ORDER #${order.id.slice(-8).toUpperCase()} – ${dbEvent.name}`,
+        subject: `NEW ORDER #${primaryOrderId.slice(-8).toUpperCase()} – ${emailItems.length} item(s)`,
         react: AdminNotification({
-          orderId: order.id,
+          orderId: primaryOrderId,
           customerName,
           customerEmail,
           customerPhone,
-          eventName: dbEvent.name,
-          ticketTypeName: ticketType.name,
-          qty,
+          items: emailItems,
           totalCents: amountTotal,
-          serviceFeeCents,
-          eventDate,
-          eventVenue: dbEvent.venue,
-          eventCity: dbEvent.city,
           siteUrl,
         }),
       }),

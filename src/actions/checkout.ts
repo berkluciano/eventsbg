@@ -7,10 +7,12 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { SERVICE_FEE_CENTS } from "@/lib/constants";
 
-const checkoutSchema = z.object({
-  eventId: z.string().min(1),
+const cartItemSchema = z.object({
   ticketTypeId: z.string().min(1),
-  qty: z.coerce.number().int().min(1).max(10),
+  qty: z.number().int().min(1).max(20),
+});
+
+const checkoutSchema = z.object({
   customerName: z.string().min(2).max(100),
   customerEmail: z.string().email(),
   customerPhone: z.string().min(5).max(30),
@@ -21,10 +23,17 @@ const checkoutSchema = z.object({
 });
 
 export async function createCheckoutSession(formData: FormData) {
-  const parsed = checkoutSchema.safeParse({
-    eventId: formData.get("eventId"),
-    ticketTypeId: formData.get("ticketTypeId"),
-    qty: formData.get("qty"),
+  const rawItems = formData.get("items") as string;
+  let cartItems: { ticketTypeId: string; qty: number }[];
+
+  try {
+    const parsed = JSON.parse(rawItems);
+    cartItems = z.array(cartItemSchema).min(1).parse(parsed);
+  } catch {
+    return { error: "Invalid cart data. Please refresh and try again." };
+  }
+
+  const customerParsed = checkoutSchema.safeParse({
     customerName: formData.get("customerName"),
     customerEmail: formData.get("customerEmail"),
     customerPhone: formData.get("customerPhone"),
@@ -34,69 +43,72 @@ export async function createCheckoutSession(formData: FormData) {
     insurance: formData.get("insurance"),
   });
 
-  if (!parsed.success) {
+  if (!customerParsed.success) {
     return { error: "Invalid form data. Please check your inputs." };
   }
 
-  const { eventId, ticketTypeId, qty, customerName, customerEmail, customerPhone, customerCity, customerPostalCode, customerAddress, insurance } = parsed.data;
+  const { customerName, customerEmail, customerPhone, customerCity, customerPostalCode, customerAddress, insurance } = customerParsed.data;
   const hasInsurance = insurance === "true";
 
-  const [event, ticketType] = await Promise.all([
-    prisma.event.findUnique({ where: { id: eventId, published: true } }),
-    prisma.ticketType.findUnique({ where: { id: ticketTypeId, eventId } }),
-  ]);
+  const ticketTypeIds = cartItems.map((i) => i.ticketTypeId);
+  const ticketTypes = await prisma.ticketType.findMany({
+    where: { id: { in: ticketTypeIds } },
+    include: { event: { select: { id: true, name: true, venue: true, city: true, published: true } } },
+  });
 
-  if (!event) return { error: "Event not found." };
-  if (!ticketType) return { error: "Ticket type not found." };
-
-  if (ticketType.capacity !== null) {
-    const available = ticketType.capacity - ticketType.sold;
-    if (qty > available) {
-      return { error: `Only ${available} ticket(s) remaining.` };
+  // Validate all items
+  for (const item of cartItems) {
+    const tt = ticketTypes.find((t) => t.id === item.ticketTypeId);
+    if (!tt || !tt.event.published) return { error: `Ticket type not found.` };
+    if (tt.capacity !== null) {
+      const available = tt.capacity - tt.sold;
+      if (item.qty > available) {
+        return { error: `Only ${available} ticket(s) remaining for "${tt.name}".` };
+      }
     }
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const insuranceCents = hasInsurance ? Math.round(ticketType.priceCents * 0.05) : 0;
 
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
-    {
-      price_data: {
-        currency: "eur",
-        product_data: {
-          name: `${event.name} – ${ticketType.name}`,
-          description: `${event.venue}, ${event.city}`,
-        },
-        unit_amount: ticketType.priceCents,
-      },
-      quantity: qty,
-    },
-    {
-      price_data: {
-        currency: "eur",
-        product_data: {
-          name: "Concierge Service Fee",
-          description: "Per-ticket fee for our ticket purchasing service",
-        },
-        unit_amount: SERVICE_FEE_CENTS,
-      },
-      quantity: qty,
-    },
-  ];
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
-  if (hasInsurance) {
+  for (const item of cartItems) {
+    const tt = ticketTypes.find((t) => t.id === item.ticketTypeId)!;
     lineItems.push({
       price_data: {
         currency: "eur",
-        product_data: {
-          name: "Ticket Insurance",
-          description: "Protection in case you can't attend",
-        },
-        unit_amount: insuranceCents,
+        product_data: { name: `${tt.event.name} – ${tt.name}`, description: `${tt.event.venue}, ${tt.event.city}` },
+        unit_amount: tt.priceCents,
       },
-      quantity: qty,
+      quantity: item.qty,
+    });
+    lineItems.push({
+      price_data: {
+        currency: "eur",
+        product_data: { name: "Concierge Service Fee", description: "Per-ticket fee" },
+        unit_amount: SERVICE_FEE_CENTS,
+      },
+      quantity: item.qty,
     });
   }
+
+  if (hasInsurance) {
+    const totalTicketCents = cartItems.reduce((sum, item) => {
+      const tt = ticketTypes.find((t) => t.id === item.ticketTypeId)!;
+      return sum + tt.priceCents * item.qty;
+    }, 0);
+    lineItems.push({
+      price_data: {
+        currency: "eur",
+        product_data: { name: "Ticket Insurance (5%)" },
+        unit_amount: Math.round(totalTicketCents * 0.05),
+      },
+      quantity: 1,
+    });
+  }
+
+  // Encode items compactly for metadata: "ttId:qty|ttId:qty"
+  const itemsMeta = cartItems.map((i) => `${i.ticketTypeId}:${i.qty}`).join("|");
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
@@ -104,9 +116,7 @@ export async function createCheckoutSession(formData: FormData) {
     line_items: lineItems,
     customer_email: customerEmail,
     metadata: {
-      eventId,
-      ticketTypeId,
-      qty: String(qty),
+      items: itemsMeta,
       customerName,
       customerEmail,
       customerPhone,
@@ -116,8 +126,8 @@ export async function createCheckoutSession(formData: FormData) {
       insurance: hasInsurance ? "true" : "false",
     },
     success_url: `${siteUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${siteUrl}/checkout/${eventId}`,
-    expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 min
+    cancel_url: `${siteUrl}/checkout`,
+    expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
   });
 
   redirect(session.url!);

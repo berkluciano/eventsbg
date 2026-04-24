@@ -63,6 +63,8 @@ export const translations = {
       serviceFeeLabel: "такса за услугата на брой",
       shareOnFacebook: "Сподели във Facebook",
       festivalDays: "Дни на фестивала",
+      total: "общо",
+      viewCart: "Виж количката",
     },
     checkout: {
       backToEvent: "Обратно към събитието",
@@ -99,6 +101,11 @@ export const translations = {
       total: "Общо",
       securePayment: "Сигурно плащане чрез Stripe. Данните на картата ви не се съхраняват.",
       ticketDelivery: "Билетът се доставя директно на вашия имейл от официалния продавач.",
+      cartEmpty: "Количката е празна",
+      cartEmptyDesc: "Разгледайте събитията и добавете билети в количката.",
+      cartTitle: "Вашата количка",
+      cartItems: (n: number) => `${n} ${n === 1 ? "билет" : "билета"}`,
+      removeItem: "Премахни",
       payButton: "Плати сигурно чрез Stripe →",
       payingBtn: "Пренасочване към плащане...",
       terms: (fee: string) =>
@@ -236,6 +243,8 @@ export const translations = {
       serviceFeeLabel: "service fee per ticket",
       shareOnFacebook: "Share on Facebook",
       festivalDays: "Festival Days",
+      total: "total",
+      viewCart: "View cart",
     },
     checkout: {
       backToEvent: "Back to event",
@@ -272,6 +281,11 @@ export const translations = {
       total: "Total",
       securePayment: "Secure payment powered by Stripe. Your card details are never stored.",
       ticketDelivery: "Ticket delivered directly to your email by the official vendor.",
+      cartEmpty: "Your cart is empty",
+      cartEmptyDesc: "Browse events and add tickets to your cart.",
+      cartTitle: "Your cart",
+      cartItems: (n: number) => `${n} ticket${n !== 1 ? "s" : ""}`,
+      removeItem: "Remove",
       payButton: "Pay securely with Stripe →",
       payingBtn: "Redirecting to payment...",
       terms: (fee: string) =>
