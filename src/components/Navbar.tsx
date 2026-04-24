@@ -13,7 +13,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 bg-brand text-white shadow-lg">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link href="/" className="hover:opacity-90 transition-opacity flex-shrink-0">
-          <Image src="/logo.png" alt="Events BG" height={36} width={160} className="h-9 w-auto" />
+          <Image src="/logo.png" alt="Eventor BG" height={36} width={160} className="h-9 w-auto" />
         </Link>
 
         <div className="flex items-center gap-6">

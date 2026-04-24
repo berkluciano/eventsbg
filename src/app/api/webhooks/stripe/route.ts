@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
 
     await Promise.allSettled([
       resend.emails.send({
-        from: `Events BG <${supportEmail}>`,
+        from: `Eventor BG <${supportEmail}>`,
         to: customerEmail,
         subject: `Order Confirmed – ${dbEvent.name}`,
         react: OrderConfirmation({
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
         }),
       }),
       resend.emails.send({
-        from: `Events BG <${supportEmail}>`,
+        from: `Eventor BG <${supportEmail}>`,
         to: adminEmail,
         subject: `NEW ORDER #${order.id.slice(-8).toUpperCase()} – ${dbEvent.name}`,
         react: AdminNotification({

@@ -5,7 +5,7 @@ import { EventsContent } from "@/components/EventsContent";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Събития | Events BG",
+  title: "Събития | Eventor BG",
   description: "Разгледайте всички предстоящи събития и купете билети чрез нашата услуга.",
 };
 

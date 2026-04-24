@@ -59,7 +59,7 @@ export function AdminNotification({
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logo}>Events BG — New Order</Heading>
+            <Heading style={logo}>Eventor BG — New Order</Heading>
           </Section>
 
           <Section style={content}>
@@ -174,7 +174,7 @@ export function AdminNotification({
           </Section>
 
           <Section style={footer}>
-            <Text style={footerText}>Events BG Admin Notification</Text>
+            <Text style={footerText}>Eventor BG Admin Notification</Text>
           </Section>
         </Container>
       </Body>

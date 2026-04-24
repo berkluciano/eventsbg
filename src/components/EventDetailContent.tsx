@@ -47,7 +47,7 @@ export function EventDetailContent({ event }: EventDetailContentProps) {
           {/* Left column */}
           <div className="lg:col-span-3 space-y-6">
             {/* Image */}
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-200 max-w-lg">
+            <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-200 w-full">
               {event.squareImage ? (
                 <Image
                   src={event.squareImage}

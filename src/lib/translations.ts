@@ -129,7 +129,7 @@ export const translations = {
       contact: "Контакти",
       contactUs: "Контакти",
       faq: "Често задавани въпроси",
-      rights: (year: number) => `© ${year} Events BG. Всички права запазени.`,
+      rights: (year: number) => `© ${year} Eventor BG. Всички права запазени.`,
     },
     notFound: {
       title: "Страницата не е намерена",
@@ -300,7 +300,7 @@ export const translations = {
       contact: "Contact",
       contactUs: "Contact Us",
       faq: "FAQ",
-      rights: (year: number) => `© ${year} Events BG. All rights reserved.`,
+      rights: (year: number) => `© ${year} Eventor BG. All rights reserved.`,
     },
     notFound: {
       title: "Page not found",

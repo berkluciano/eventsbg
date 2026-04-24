@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: {
     default: "Admin",
-    template: "%s | Admin – Events BG",
+    template: "%s | Admin – Eventor BG",
   },
 };
 
@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-56 bg-brand text-white flex flex-col flex-shrink-0 shadow-lg">
         <div className="px-5 py-5 border-b border-white/10">
           <Link href="/admin" className="text-lg font-bold text-white hover:opacity-90">
-            Events BG
+            Eventor BG
           </Link>
           <div className="text-xs text-blue-200 mt-0.5">Admin Panel</div>
         </div>

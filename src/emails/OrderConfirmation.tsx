@@ -51,7 +51,7 @@ export function OrderConfirmation({
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logo}>Events BG</Heading>
+            <Heading style={logo}>Eventor BG</Heading>
           </Section>
 
           <Section style={content}>
@@ -172,7 +172,7 @@ export function OrderConfirmation({
 
           <Section style={footer}>
             <Text style={footerText}>
-              © {new Date().getFullYear()} Events BG. All rights reserved.
+              © {new Date().getFullYear()} Eventor BG. All rights reserved.
             </Text>
             <Text style={footerText}>
               The service fee of {formatEur(serviceFeeCents)} covers our concierge service and is

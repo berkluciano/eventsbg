@@ -5,11 +5,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Events BG – Concierge Ticket Service",
-    template: "%s | Events BG",
+    default: "Eventor BG – Concierge Ticket Service",
+    template: "%s | Eventor BG",
   },
   description:
-    "Events BG is your trusted concierge ticket service. Browse events, pay online, and we purchase your ticket from the official vendor on your behalf.",
+    "Eventor BG is your trusted concierge ticket service. Browse events, pay online, and we purchase your ticket from the official vendor on your behalf.",
   keywords: ["tickets", "events", "Bulgaria", "concerts", "sports", "concierge"],
 };
 
