@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { SERVICE_FEE_CENTS } from "@/lib/constants";
@@ -58,7 +59,7 @@ export async function createCheckoutSession(formData: FormData) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const insuranceCents = hasInsurance ? Math.round(ticketType.priceCents * 0.05) : 0;
 
-  const lineItems: Parameters<typeof stripe.checkout.sessions.create>[0]["line_items"] = [
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
     {
       price_data: {
         currency: "eur",
