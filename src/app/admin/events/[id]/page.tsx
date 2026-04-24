@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { updateEvent, deleteEvent, createTicketType, deleteTicketType } from "@/actions/events";
 import { EventForm } from "@/components/admin/EventForm";
 import { TicketTypeForm } from "@/components/admin/TicketTypeForm";
+import { EditableTicketType } from "@/components/admin/EditableTicketType";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { formatCents } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -118,31 +119,12 @@ export default async function EditEventPage({ params }: PageProps) {
             {event.ticketTypes.map((tt) => {
               const deleteWithIds = deleteTicketType.bind(null, tt.id, id);
               return (
-                <div
+                <EditableTicketType
                   key={tt.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                >
-                  <div>
-                    <div className="font-medium text-gray-900">{tt.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {formatCents(tt.priceCents)}
-                      {tt.capacity !== null && (
-                        <span className="ml-2 text-gray-400">
-                          · {tt.sold}/{tt.capacity} sold
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <form action={deleteWithIds as unknown as (fd: FormData) => void}>
-                    <button
-                      type="submit"
-                      className="text-red-400 hover:text-red-600 transition-colors p-1.5"
-                      title="Delete ticket type"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </form>
-                </div>
+                  tt={tt}
+                  eventId={id}
+                  deleteAction={deleteWithIds as unknown as (fd: FormData) => void}
+                />
               );
             })}
           </div>
