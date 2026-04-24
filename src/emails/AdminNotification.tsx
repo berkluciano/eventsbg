@@ -31,7 +31,7 @@ export function AdminNotification({ orderId, customerName, customerEmail, custom
   return (
     <Html>
       <Head />
-      <Preview>NEW ORDER #{orderId.slice(-8).toUpperCase()} – {items.length} item(s) – {customerName}</Preview>
+      <Preview>{`NEW ORDER #${orderId.slice(-8).toUpperCase()} – ${items.length} item(s) – ${customerName}`}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
