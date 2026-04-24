@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 import { MapPin, Calendar, ArrowLeft, Ticket, Share2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatDateTime, formatCents } from "@/lib/utils";
@@ -76,9 +77,9 @@ export function EventDetailContent({ event }: EventDetailContentProps) {
             {/* Description */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <h2 className="text-lg font-bold text-gray-900 mb-3">{t.event.aboutEvent}</h2>
-              <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-                {event.description}
-              </p>
+              <div className="text-gray-600 leading-relaxed prose prose-sm max-w-none prose-strong:text-gray-900 prose-em:text-gray-700">
+                <ReactMarkdown>{event.description}</ReactMarkdown>
+              </div>
             </div>
           </div>
 
