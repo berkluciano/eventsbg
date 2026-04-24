@@ -13,6 +13,7 @@ async function getEvents(query?: string, city?: string) {
   return prisma.event.findMany({
     where: {
       published: true,
+      parentId: null,
       ...(query
         ? {
             OR: [
@@ -33,7 +34,7 @@ async function getEvents(query?: string, city?: string) {
 
 async function getCities() {
   const rows = await prisma.event.findMany({
-    where: { published: true },
+    where: { published: true, parentId: null },
     select: { city: true },
     distinct: ["city"],
     orderBy: { city: "asc" },
