@@ -18,8 +18,8 @@ const faqs: Faq[] = [
       <div className="space-y-3">
         <p>
           Можете да подадете заявка за анулиране на полица на имейл{" "}
-          <a href="mailto:support@eventsbg.com" className="text-brand hover:underline font-medium">
-            support@eventsbg.com
+          <a href="mailto:support@eventor.bg" className="text-brand hover:underline font-medium">
+            support@eventor.bg
           </a>
           . Ще Ви бъде възстановена сумата за застраховката, ако анулирате в рамките на 14-дневен срок, при условие че не е заведена щета и събитието не е започнало.
         </p>

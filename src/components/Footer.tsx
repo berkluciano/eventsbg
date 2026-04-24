@@ -43,7 +43,7 @@ export function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-3">{t.footer.contact}</h4>
             <p className="text-sm">
-              {process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventsbg.com"}
+              {process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventor.bg"}
             </p>
           </div>
         </div>

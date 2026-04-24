@@ -39,10 +39,10 @@ export default function ContactPage() {
               <div>
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-0.5">Имейл</p>
                 <a
-                  href="mailto:support@eventsbg.com"
+                  href="mailto:support@eventor.bg"
                   className="text-lg font-semibold text-gray-900 hover:text-brand transition-colors"
                 >
-                  support@eventsbg.com
+                  support@eventor.bg
                 </a>
               </div>
             </div>

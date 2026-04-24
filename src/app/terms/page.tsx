@@ -31,7 +31,7 @@ export default function TermsPage() {
               <div className="space-y-3 text-sm">
                 <p><span className="font-medium">Чл.2. (1)</span> Events BG е посредническа услуга за закупуване на билети. Ние не сме организатор на събитията и не продаваме билети директно.</p>
                 <p><span className="font-medium">(2)</span> Нашата услуга се състои в следното: след получаване на вашето плащане, ние закупуваме билет от официалния продавач на ваше име, с вашите данни. Билетът се изпраща директно от официалния продавач на посочения от вас имейл адрес.</p>
-                <p><span className="font-medium">(3)</span> Данни за контакт: имейл: <a href="mailto:support@eventsbg.com" className="text-brand hover:underline">support@eventsbg.com</a></p>
+                <p><span className="font-medium">(3)</span> Данни за контакт: имейл: <a href="mailto:support@eventor.bg" className="text-brand hover:underline">support@eventor.bg</a></p>
               </div>
             </section>
 
@@ -70,7 +70,7 @@ export default function TermsPage() {
                 <p><span className="font-medium">(2)</span> Застраховката покрива стойността на билета (без таксата за обслужване) при настъпване на застрахователно събитие съгласно общите условия на Allianz, включително, но не само: заболяване, злополука, смърт на близък, извънредни обстоятелства.</p>
                 <p><span className="font-medium">(3)</span> Застраховката е незадължителна и се добавя по избор на потребителя в процеса на поръчка срещу допълнително заплащане.</p>
                 <p><span className="font-medium">(4)</span> Можете да подадете заявка за анулиране на полица на имейл{" "}
-                  <a href="mailto:support@eventsbg.com" className="text-brand hover:underline">support@eventsbg.com</a>.{" "}
+                  <a href="mailto:support@eventor.bg" className="text-brand hover:underline">support@eventor.bg</a>.{" "}
                   Ще Ви бъде възстановена сумата за застраховката, ако анулирате в рамките на 14-дневен срок, при условие че не е заведена щета и събитието не е започнало. Заявката следва да съдържа вашите две имена, телефон за връзка с Вас, а според начина на плащане:</p>
                 <div className="ml-4 space-y-2 text-gray-600">
                   <p><span className="font-medium text-gray-800">а) При заплащане на билети с банкова карта и през портала с ДСК</span> — стойността на полицата се възстановява по картата, с която са платени билетите.</p>
@@ -154,7 +154,7 @@ export default function TermsPage() {
                   <li>Право на ограничаване на обработването;</li>
                   <li>Право на преносимост на данните.</li>
                 </ul>
-                <p><span className="font-medium">(7)</span> За упражняване на горепосочените права потребителят може да изпрати искане на <a href="mailto:support@eventsbg.com" className="text-brand hover:underline">support@eventsbg.com</a>.</p>
+                <p><span className="font-medium">(7)</span> За упражняване на горепосочените права потребителят може да изпрати искане на <a href="mailto:support@eventor.bg" className="text-brand hover:underline">support@eventor.bg</a>.</p>
                 <p><span className="font-medium">(8)</span> При съмнение за нарушение на правата по защита на личните данни, потребителят може да подаде жалба до Комисията за защита на личните данни:</p>
                 <address className="not-italic ml-4 text-gray-600 space-y-0.5">
                   <p>Адрес: гр. София, ул. „Проф. Цветан Лазаров" № 2</p>

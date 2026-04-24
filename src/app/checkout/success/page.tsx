@@ -8,7 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function CheckoutSuccessPage() {
   const { t } = useLanguage();
-  const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventsbg.com";
+  const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventor.bg";
 
   return (
     <>

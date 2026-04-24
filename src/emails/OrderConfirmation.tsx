@@ -166,7 +166,7 @@ export function OrderConfirmation({
 
             <Text style={text}>
               Questions? Reply to this email or contact us at{" "}
-              {process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventsbg.com"}.
+              {process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventor.bg"}.
             </Text>
           </Section>
 

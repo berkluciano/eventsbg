@@ -88,8 +88,8 @@ export async function POST(req: NextRequest) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
     const eventDate = formatDateTime(dbEvent.startsAt);
-    const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventsbg.com";
-    const adminEmail = process.env.ADMIN_EMAIL ?? "admin@eventsbg.com";
+    const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventor.bg";
+    const adminEmail = process.env.ADMIN_EMAIL ?? "admin@eventor.bg";
 
     await Promise.allSettled([
       resend.emails.send({
