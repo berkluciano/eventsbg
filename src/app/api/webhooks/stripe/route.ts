@@ -63,6 +63,8 @@ export async function POST(req: NextRequest) {
     const amountTotal = session.amount_total ?? 0;
     const serviceFeeCents = SERVICE_FEE_CENTS * qty;
 
+    const user = await prisma.user.findUnique({ where: { email: customerEmail } });
+
     const order = await prisma.order.create({
       data: {
         eventId,
@@ -75,6 +77,7 @@ export async function POST(req: NextRequest) {
         customerPhone,
         status: "PENDING_PURCHASE",
         stripeSessionId: session.id,
+        userId: user?.id ?? null,
       },
     });
 

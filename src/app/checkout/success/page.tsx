@@ -1,14 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { CheckCircle, Mail, Clock, ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Order Confirmed!",
-};
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function CheckoutSuccessPage() {
+  const { t } = useLanguage();
   const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@eventsbg.com";
 
   return (
@@ -23,44 +22,33 @@ export default function CheckoutSuccessPage() {
               </div>
             </div>
 
-            <h1 className="text-2xl font-extrabold text-gray-900 mb-3">
-              Order Confirmed!
-            </h1>
-            <p className="text-gray-500 mb-8 leading-relaxed">
-              Thank you for your order. We&apos;ve received your payment and will get started on
-              purchasing your ticket right away.
-            </p>
+            <h1 className="text-2xl font-extrabold text-gray-900 mb-3">{t.success.title}</h1>
+            <p className="text-gray-500 mb-8 leading-relaxed">{t.success.subtitle}</p>
 
             <div className="space-y-4 text-left mb-8">
               <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
                 <Mail className="w-5 h-5 text-brand flex-shrink-0 mt-0.5" />
                 <div>
                   <div className="text-sm font-semibold text-gray-900 mb-0.5">
-                    Check your email
+                    {t.success.checkEmail}
                   </div>
-                  <div className="text-xs text-gray-500">
-                    We&apos;ve sent you a confirmation email with your order details.
-                  </div>
+                  <div className="text-xs text-gray-500">{t.success.checkEmailDesc}</div>
                 </div>
               </div>
-
               <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
                 <Clock className="w-5 h-5 text-brand flex-shrink-0 mt-0.5" />
                 <div>
                   <div className="text-sm font-semibold text-gray-900 mb-0.5">
-                    Ticket on its way
+                    {t.success.ticketOnWay}
                   </div>
-                  <div className="text-xs text-gray-500">
-                    We&apos;ll purchase your ticket from the official vendor and they will send it
-                    directly to your email address.
-                  </div>
+                  <div className="text-xs text-gray-500">{t.success.ticketOnWayDesc}</div>
                 </div>
               </div>
             </div>
 
             <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8 text-left">
               <p className="text-xs text-blue-700">
-                <strong>Questions about your order?</strong> Contact us at{" "}
+                <strong>{t.success.questions}</strong>{" "}
                 <a href={`mailto:${supportEmail}`} className="underline hover:no-underline">
                   {supportEmail}
                 </a>
@@ -71,7 +59,7 @@ export default function CheckoutSuccessPage() {
               href="/events"
               className="inline-flex items-center gap-2 bg-brand text-white font-semibold px-6 py-3 rounded-xl hover:bg-brand-800 transition-colors"
             >
-              Browse More Events <ArrowRight className="w-4 h-4" />
+              {t.success.browseMore} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

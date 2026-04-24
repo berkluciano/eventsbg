@@ -126,7 +126,7 @@ export default async function EditEventPage({ params }: PageProps) {
                       )}
                     </div>
                   </div>
-                  <form action={async () => { await deleteWithIds(); }}>
+                  <form action={deleteWithIds as unknown as (fd: FormData) => void}>
                     <button
                       type="submit"
                       className="text-red-400 hover:text-red-600 transition-colors p-1.5"

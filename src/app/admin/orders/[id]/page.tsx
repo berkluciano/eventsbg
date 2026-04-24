@@ -210,7 +210,7 @@ export default async function OrderDetailPage({ params }: PageProps) {
             <strong>{order.customerEmail}</strong> when purchasing.
           </p>
 
-          <form action={async (fd) => { await markPurchasedWithId(fd); }} className="space-y-4">
+          <form action={markPurchasedWithId as unknown as (fd: FormData) => void} className="space-y-4">
             <div>
               <label
                 htmlFor="notes"
@@ -239,7 +239,7 @@ export default async function OrderDetailPage({ params }: PageProps) {
             </div>
           </form>
 
-          <form action={async () => { await markFailedWithId(); }} className="mt-3">
+          <form action={markFailedWithId as unknown as (fd: FormData) => void} className="mt-3">
             <button
               type="submit"
               className="inline-flex items-center gap-2 text-sm text-red-500 hover:text-red-700 font-medium"

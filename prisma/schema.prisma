@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Event {
@@ -51,8 +50,19 @@ model Order {
   notes           String?     @db.Text
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  userId          String?
   event           Event       @relation(fields: [eventId], references: [id])
   ticketType      TicketType  @relation(fields: [ticketTypeId], references: [id])
+  user            User?       @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  orders       Order[]
 }
 
 enum OrderStatus {
