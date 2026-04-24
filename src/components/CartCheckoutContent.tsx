@@ -104,7 +104,7 @@ export function CartCheckoutContent() {
                   onClick={clearCart}
                   className="mt-4 text-xs text-gray-400 hover:text-red-500 transition-colors"
                 >
-                  {t.checkout.cartEmpty} ×
+                  {t.events.clear}
                 </button>
               </div>
 
