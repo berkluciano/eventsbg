@@ -22,7 +22,7 @@ const eventSchema = z.object({
 const ticketTypeSchema = z.object({
   name: z.string().min(1).max(100),
   priceCents: z.coerce.number().int().min(1),
-  capacity: z.coerce.number().int().min(1).optional().nullable(),
+  capacity: z.coerce.number().int().min(0).optional().nullable(),
 });
 
 async function requireAdmin() {
