@@ -20,6 +20,9 @@ model Event {
   published   Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  parentId    String?
+  parent      Event?       @relation("SubEvents", fields: [parentId], references: [id])
+  subEvents   Event[]      @relation("SubEvents")
   ticketTypes TicketType[]
   orders      Order[]
 }

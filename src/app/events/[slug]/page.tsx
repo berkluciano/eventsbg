@@ -13,7 +13,25 @@ interface PageProps {
 async function getEvent(slug: string) {
   return prisma.event.findUnique({
     where: { slug, published: true },
-    include: { ticketTypes: { orderBy: { priceCents: "asc" } } },
+    include: {
+      ticketTypes: { orderBy: { priceCents: "asc" } },
+      parent: { select: { id: true, name: true, slug: true } },
+      subEvents: {
+        where: { published: true },
+        orderBy: { startsAt: "asc" },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          startsAt: true,
+          endsAt: true,
+          city: true,
+          venue: true,
+          squareImage: true,
+          ticketTypes: { select: { priceCents: true }, orderBy: { priceCents: "asc" }, take: 1 },
+        },
+      },
+    },
   });
 }
 

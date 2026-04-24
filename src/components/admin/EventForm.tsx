@@ -18,13 +18,16 @@ interface EventFormProps {
     endsAt?: string;
     squareImage?: string | null;
     published?: boolean;
+    parentId?: string | null;
   };
   submitLabel?: string;
+  allEvents?: { id: string; name: string }[];
+  currentEventId?: string;
 }
 
 type FormState = { error?: string };
 
-export function EventForm({ action, defaultValues = {}, submitLabel = "Save Event" }: EventFormProps) {
+export function EventForm({ action, defaultValues = {}, submitLabel = "Save Event", allEvents = [], currentEventId }: EventFormProps) {
   const [imageUrl, setImageUrl] = useState(defaultValues.squareImage ?? "");
 
   const [state, formAction] = useActionState(
@@ -166,6 +169,29 @@ export function EventForm({ action, defaultValues = {}, submitLabel = "Save Even
             </div>
           </div>
         </div>
+
+        {/* Parent Event */}
+        {allEvents.length > 0 && (
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Parent Event <span className="text-gray-400 text-xs">(optional — for festival day events)</span>
+            </label>
+            <select
+              name="parentId"
+              defaultValue={defaultValues.parentId ?? ""}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand"
+            >
+              <option value="">— None (standalone event) —</option>
+              {allEvents
+                .filter((e) => e.id !== currentEventId)
+                .map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        )}
 
         {/* Published */}
         <div className="md:col-span-2">

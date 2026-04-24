@@ -16,6 +16,7 @@ const eventSchema = z.object({
   endsAt: z.string().optional(),
   squareImage: z.string().url().optional().or(z.literal("")),
   published: z.coerce.boolean().optional(),
+  parentId: z.string().optional().or(z.literal("")),
 });
 
 const ticketTypeSchema = z.object({
@@ -41,13 +42,14 @@ export async function createEvent(formData: FormData) {
     endsAt: formData.get("endsAt") || undefined,
     squareImage: formData.get("squareImage") || undefined,
     published: formData.get("published"),
+    parentId: formData.get("parentId") || undefined,
   });
 
   if (!parsed.success) {
     return { error: "Invalid data: " + parsed.error.issues[0]?.message };
   }
 
-  const { name, description, city, venue, startsAt, endsAt, squareImage, published } =
+  const { name, description, city, venue, startsAt, endsAt, squareImage, published, parentId } =
     parsed.data;
 
   let slug = slugify(name);
@@ -65,6 +67,7 @@ export async function createEvent(formData: FormData) {
       endsAt: endsAt ? new Date(endsAt) : null,
       squareImage: squareImage || null,
       published: published ?? false,
+      parentId: parentId || null,
     },
   });
 
@@ -85,13 +88,14 @@ export async function updateEvent(id: string, formData: FormData) {
     endsAt: formData.get("endsAt") || undefined,
     squareImage: formData.get("squareImage") || undefined,
     published: formData.get("published"),
+    parentId: formData.get("parentId") || undefined,
   });
 
   if (!parsed.success) {
     return { error: "Invalid data: " + parsed.error.issues[0]?.message };
   }
 
-  const { name, description, city, venue, startsAt, endsAt, squareImage, published } =
+  const { name, description, city, venue, startsAt, endsAt, squareImage, published, parentId } =
     parsed.data;
 
   await prisma.event.update({
@@ -105,6 +109,7 @@ export async function updateEvent(id: string, formData: FormData) {
       endsAt: endsAt ? new Date(endsAt) : null,
       squareImage: squareImage || null,
       published: published ?? false,
+      parentId: parentId || null,
     },
   });
 

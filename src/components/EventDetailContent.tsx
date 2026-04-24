@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
-import { MapPin, Calendar, ArrowLeft, Ticket, Share2 } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, Ticket, Share2, CalendarDays } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatDateTime, formatCents } from "@/lib/utils";
 
@@ -13,6 +13,18 @@ interface TicketType {
   priceCents: number;
   capacity: number | null;
   sold: number;
+}
+
+interface SubEvent {
+  id: string;
+  name: string;
+  slug: string;
+  startsAt: Date;
+  endsAt: Date | null;
+  city: string;
+  venue: string;
+  squareImage: string | null;
+  ticketTypes: { priceCents: number }[];
 }
 
 interface EventDetailContentProps {
@@ -27,22 +39,34 @@ interface EventDetailContentProps {
     endsAt: Date | null;
     squareImage: string | null;
     ticketTypes: TicketType[];
+    parent?: { id: string; name: string; slug: string } | null;
+    subEvents?: SubEvent[];
   };
 }
 
 export function EventDetailContent({ event }: EventDetailContentProps) {
   const { t, locale } = useLanguage();
   const minPrice = event.ticketTypes[0]?.priceCents;
+  const isFestivalHub = (event.subEvents?.length ?? 0) > 0;
 
   return (
     <main className="flex-1 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link
-          href="/events"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> {t.event.backToEvents}
-        </Link>
+        {event.parent ? (
+          <Link
+            href={`/events/${event.parent.slug}`}
+            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" /> {event.parent.name}
+          </Link>
+        ) : (
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" /> {t.event.backToEvents}
+          </Link>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Left column */}
@@ -64,8 +88,8 @@ export function EventDetailContent({ event }: EventDetailContentProps) {
               )}
             </div>
 
-            {/* Mobile buy button */}
-            {event.ticketTypes.some((tt) => tt.capacity === null || tt.capacity - tt.sold > 0) && (
+            {/* Mobile buy button — only for non-hub events */}
+            {!isFestivalHub && event.ticketTypes.some((tt) => tt.capacity === null || tt.capacity - tt.sold > 0) && (
               <Link
                 href={`/checkout/${event.id}`}
                 className="lg:hidden block w-full bg-brand text-white text-center font-semibold py-4 rounded-xl hover:bg-brand-800 transition-colors shadow-sm"
@@ -119,55 +143,84 @@ export function EventDetailContent({ event }: EventDetailContentProps) {
                 )}
               </div>
 
-              {/* Ticket Types */}
-              {event.ticketTypes.length > 0 ? (
-                <div className="space-y-3 mb-6">
-                  <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                    {t.event.availableTickets}
+              {/* Festival days OR ticket types */}
+              {isFestivalHub ? (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <CalendarDays className="w-4 h-4" /> {t.event.festivalDays}
                   </h3>
-                  {event.ticketTypes.map((tt) => {
-                    const available = tt.capacity !== null ? tt.capacity - tt.sold : null;
-                    const soldOut = available !== null && available <= 0;
+                  {event.subEvents!.map((sub) => {
+                    const fromPrice = sub.ticketTypes[0]?.priceCents;
                     return (
-                      <div
-                        key={tt.id}
-                        className={`flex items-center justify-between p-3 rounded-lg border ${
-                          soldOut ? "border-gray-200 bg-gray-50 opacity-60" : "border-gray-200 bg-gray-50"
-                        }`}
+                      <Link
+                        key={sub.id}
+                        href={`/events/${sub.slug}`}
+                        className="flex items-center justify-between p-4 rounded-xl border border-gray-200 bg-gray-50 hover:border-brand/50 hover:bg-brand/5 transition-colors group"
                       >
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{tt.name}</div>
-                          {soldOut ? (
-                            <div className="text-xs text-red-500">{t.event.soldOut}</div>
-                          ) : available !== null && available <= 10 ? (
-                            <div className="text-xs text-amber-600">{t.event.left(available)}</div>
-                          ) : (
-                            <div className="text-xs text-green-600">{t.event.available}</div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold text-gray-900 group-hover:text-brand transition-colors">{sub.name}</div>
+                          <div className="text-xs text-gray-500 mt-0.5">{formatDateTime(sub.startsAt, locale)}</div>
+                          {fromPrice && (
+                            <div className="text-xs text-brand font-medium mt-0.5">{t.events.from} {formatCents(fromPrice)}</div>
                           )}
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm font-bold text-brand">
-                            {formatCents(tt.priceCents)}
-                          </div>
-                          <div className="text-xs text-gray-400">{t.event.perTicket}</div>
-                        </div>
-                      </div>
+                        <ArrowLeft className="w-4 h-4 text-gray-400 group-hover:text-brand rotate-180 flex-shrink-0 ml-3 transition-colors" />
+                      </Link>
                     );
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 mb-6">{t.event.noTickets}</p>
-              )}
+                <>
+                  {event.ticketTypes.length > 0 ? (
+                    <div className="space-y-3 mb-6">
+                      <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                        {t.event.availableTickets}
+                      </h3>
+                      {event.ticketTypes.map((tt) => {
+                        const available = tt.capacity !== null ? tt.capacity - tt.sold : null;
+                        const soldOut = available !== null && available <= 0;
+                        return (
+                          <div
+                            key={tt.id}
+                            className={`flex items-center justify-between p-3 rounded-lg border ${
+                              soldOut ? "border-gray-200 bg-gray-50 opacity-60" : "border-gray-200 bg-gray-50"
+                            }`}
+                          >
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{tt.name}</div>
+                              {soldOut ? (
+                                <div className="text-xs text-red-500">{t.event.soldOut}</div>
+                              ) : available !== null && available <= 10 ? (
+                                <div className="text-xs text-amber-600">{t.event.left(available)}</div>
+                              ) : (
+                                <div className="text-xs text-green-600">{t.event.available}</div>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm font-bold text-brand">
+                                {formatCents(tt.priceCents)}
+                              </div>
+                              <div className="text-xs text-gray-400">{t.event.perTicket}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 mb-6">{t.event.noTickets}</p>
+                  )}
 
-              {event.ticketTypes.some(
-                (tt) => tt.capacity === null || tt.capacity - tt.sold > 0
-              ) && (
-                <Link
-                  href={`/checkout/${event.id}`}
-                  className="block w-full bg-brand text-white text-center font-semibold py-4 rounded-xl hover:bg-brand-800 transition-colors shadow-sm"
-                >
-                  {t.event.getTickets}
-                </Link>
+                  {event.ticketTypes.some(
+                    (tt) => tt.capacity === null || tt.capacity - tt.sold > 0
+                  ) && (
+                    <Link
+                      href={`/checkout/${event.id}`}
+                      className="block w-full bg-brand text-white text-center font-semibold py-4 rounded-xl hover:bg-brand-800 transition-colors shadow-sm"
+                    >
+                      {t.event.getTickets}
+                    </Link>
+                  )}
+                </>
               )}
 
               <a

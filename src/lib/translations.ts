@@ -62,6 +62,7 @@ export const translations = {
         "Продавачът изпраща билета директно на вашия имейл",
       serviceFeeLabel: "такса за услугата на брой",
       shareOnFacebook: "Сподели във Facebook",
+      festivalDays: "Дни на фестивала",
     },
     checkout: {
       backToEvent: "Обратно към събитието",
@@ -234,6 +235,7 @@ export const translations = {
       howStep3: "The vendor sends your ticket directly to your email",
       serviceFeeLabel: "service fee per ticket",
       shareOnFacebook: "Share on Facebook",
+      festivalDays: "Festival Days",
     },
     checkout: {
       backToEvent: "Back to event",

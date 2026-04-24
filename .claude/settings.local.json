@@ -12,7 +12,10 @@
       "Bash(cp \"C:\\\\Users\\\\CYRO\\\\Desktop\\\\Privacy_Notice_BG_ОК.pdf\" \"C:\\\\Users\\\\CYRO\\\\eventsbg\\\\public\\\\documents\\\\Privacy_Notice_BG.pdf\")",
       "Read(//c/Users/CYRO/**)",
       "Bash(winget install *)",
-      "Bash(xargs sed *)"
+      "Bash(xargs sed *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

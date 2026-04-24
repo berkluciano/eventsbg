@@ -2,11 +2,17 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { createEvent } from "@/actions/events";
 import { EventForm } from "@/components/admin/EventForm";
+import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "New Event" };
 
-export default function NewEventPage() {
+export default async function NewEventPage() {
+  const allEvents = await prisma.event.findMany({
+    select: { id: true, name: true },
+    orderBy: { startsAt: "desc" },
+  });
+
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
@@ -20,7 +26,7 @@ export default function NewEventPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <EventForm action={createEvent} submitLabel="Create Event" />
+        <EventForm action={createEvent} submitLabel="Create Event" allEvents={allEvents} />
       </div>
     </div>
   );
