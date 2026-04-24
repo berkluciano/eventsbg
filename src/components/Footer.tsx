@@ -38,6 +38,11 @@ export function Footer() {
                   {t.footer.faq}
                 </Link>
               </li>
+              <li>
+                <Link href="/cookies" className="hover:text-white transition-colors">
+                  {t.footer.cookies}
+                </Link>
+              </li>
             </ul>
           </div>
           <div>

@@ -129,6 +129,7 @@ export const translations = {
       contact: "Контакти",
       contactUs: "Контакти",
       faq: "Често задавани въпроси",
+      cookies: "Политика за бисквитки",
       rights: (year: number) => `© ${year} Eventor BG. Всички права запазени.`,
     },
     notFound: {
@@ -300,6 +301,7 @@ export const translations = {
       contact: "Contact",
       contactUs: "Contact Us",
       faq: "FAQ",
+      cookies: "Cookie Policy",
       rights: (year: number) => `© ${year} Eventor BG. All rights reserved.`,
     },
     notFound: {
