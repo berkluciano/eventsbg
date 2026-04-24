@@ -181,7 +181,7 @@ export const translations = {
     },
     home: {
       badge: "Trusted concierge ticket service",
-      heroTitle: "Get tickets to any event —",
+      heroTitle: "Get tickets to any event",
       heroTitleHighlight: "stress free",
       heroSubtitle:
         "Browse events, pay securely, and we handle the rest.",
