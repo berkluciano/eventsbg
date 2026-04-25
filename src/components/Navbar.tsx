@@ -25,6 +25,12 @@ export function Navbar() {
             >
               {t.nav.allEvents}
             </Link>
+            <Link
+              href="/about"
+              className="text-sm font-medium text-blue-100 hover:text-white transition-colors"
+            >
+              {t.about.nav}
+            </Link>
           </div>
 
           {/* Language switcher */}
