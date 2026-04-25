@@ -65,7 +65,7 @@ export function LoginForm() {
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                     {t.account.password}
                   </label>
-                  <Link href="/contact" className="text-xs text-brand hover:underline">
+                  <Link href="/account/forgot-password" className="text-xs text-brand hover:underline">
                     {t.account.forgotPassword}
                   </Link>
                 </div>
