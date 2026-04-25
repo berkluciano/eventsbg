@@ -127,6 +127,7 @@ export function EventsRow({
         </div>
         <Link
           href="/events"
+          className="hover:-translate-y-1 hover:bg-white/10 active:scale-[0.97]"
           style={{
             color: "rgba(255,255,255,0.72)",
             textDecoration: "none",
@@ -134,9 +135,9 @@ export function EventsRow({
             fontWeight: 500,
             padding: "10px 16px",
             borderRadius: 100,
-            background: "rgba(255,255,255,0.06)",
             border: "1px solid rgba(255,255,255,0.1)",
             whiteSpace: "nowrap",
+            transition: "transform 0.22s cubic-bezier(0.34,1.56,0.64,1), background 0.18s ease",
           }}
         >
           {t.home.viewAll} →
@@ -169,6 +170,7 @@ export function EventsRow({
             <Link
               key={e.id}
               href={`/events/${e.slug}`}
+              className="er-card hover:-translate-y-1.5 active:scale-[0.97]"
               style={{
                 flex: "0 0 320px",
                 scrollSnapAlign: "start",
@@ -178,8 +180,8 @@ export function EventsRow({
                 textDecoration: "none",
                 color: "inherit",
                 display: "block",
+                transition: "transform 0.22s cubic-bezier(0.34,1.56,0.64,1), border-color 0.22s ease, box-shadow 0.22s ease",
               }}
-              className="er-card"
             >
               {/* Image / art */}
               <div style={{ height: 180, position: "relative", overflow: "hidden" }}>
@@ -326,20 +328,15 @@ export function EventsRow({
           border-radius: 100px;
         }
 
-        /* Card base — border + transition live here so hover can override cleanly */
+        /* Card base — border lives here; transition + transform handled inline + Tailwind */
         .er-card {
           border: 1px solid rgba(255,255,255,0.08);
           will-change: transform;
-          transition:
-            transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
-            border-color 0.25s ease,
-            box-shadow 0.25s ease;
         }
 
-        /* Only trigger on real pointer devices — avoids stuck-hover on mobile */
+        /* Border glow + shadow on hover (Tailwind owns transform) */
         @media (hover: hover) and (pointer: fine) {
           .er-card:hover {
-            transform: translateY(-6px) scale(1.015);
             border-color: rgba(147, 197, 253, 0.35);
             box-shadow:
               0 24px 48px rgba(0, 8, 30, 0.45),
