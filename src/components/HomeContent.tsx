@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import HeroBackground from "@/components/HeroBackground";
 import { EventsRow } from "@/components/EventsRow";
+import FlowDivider from "@/components/FlowDivider";
 
 interface Event {
   id: string;
@@ -25,12 +26,6 @@ export function HomeContent({ events }: { events: Event[] }) {
       {/* ── Hero ── */}
       <section className="relative overflow-hidden min-h-screen flex flex-col text-white">
         <HeroBackground />
-
-        {/* bottom fade into next section */}
-        <div
-          className="absolute bottom-0 left-0 right-0 z-[5] pointer-events-none"
-          style={{ height: 200, background: "linear-gradient(to bottom, transparent 0%, #050f2e 100%)" }}
-        />
 
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 py-16 md:py-24">
           {/* kicker */}
@@ -166,6 +161,9 @@ export function HomeContent({ events }: { events: Event[] }) {
           </div>
         </div>
       </section>
+
+      {/* ── Flow Divider ── */}
+      <FlowDivider />
 
       {/* ── Trending Events Row ── */}
       {events.length > 0 && (
