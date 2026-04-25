@@ -173,13 +173,11 @@ export function EventsRow({
                 flex: "0 0 320px",
                 scrollSnapAlign: "start",
                 background: "linear-gradient(180deg,rgba(20,35,80,0.6) 0%,rgba(10,20,55,0.6) 100%)",
-                border: "1px solid rgba(255,255,255,0.08)",
                 borderRadius: 18,
                 overflow: "hidden",
                 textDecoration: "none",
                 color: "inherit",
                 display: "block",
-                transition: "transform 0.3s, border-color 0.3s, box-shadow 0.3s",
               }}
               className="er-card"
             >
@@ -300,7 +298,7 @@ export function EventsRow({
                       <>
                         {t.events.from}{" "}
                         <strong style={{ color: "#fff", fontWeight: 700, fontSize: 17 }}>
-                          {(minPrice / 100).toFixed(2)} лв
+                          €{(minPrice / 100).toFixed(2)}
                         </strong>
                       </>
                     )}
@@ -327,11 +325,34 @@ export function EventsRow({
           background: rgba(255,255,255,0.15);
           border-radius: 100px;
         }
-        .er-card:hover {
-          transform: translateY(-4px);
-          border-color: rgba(147,197,253,0.3) !important;
-          box-shadow: 0 20px 40px rgba(0,8,30,0.4);
+
+        /* Card base — border + transition live here so hover can override cleanly */
+        .er-card {
+          border: 1px solid rgba(255,255,255,0.08);
+          will-change: transform;
+          transition:
+            transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+            border-color 0.25s ease,
+            box-shadow 0.25s ease;
         }
+
+        /* Only trigger on real pointer devices — avoids stuck-hover on mobile */
+        @media (hover: hover) and (pointer: fine) {
+          .er-card:hover {
+            transform: translateY(-6px) scale(1.015);
+            border-color: rgba(147, 197, 253, 0.35);
+            box-shadow:
+              0 24px 48px rgba(0, 8, 30, 0.45),
+              0 0 0 1px rgba(147, 197, 253, 0.12);
+          }
+        }
+
+        /* Tap feedback on touch */
+        .er-card:active {
+          transform: scale(0.97);
+          transition-duration: 0.1s;
+        }
+
         @keyframes er-pulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.6; transform: scale(1.3); }
