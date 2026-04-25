@@ -16,12 +16,9 @@ export function LoginForm() {
     searchParams.get("error") ? t.account.invalidCredentials : ""
   );
   const [loading, setLoading] = useState(false);
-  const [showForgot, setShowForgot] = useState(false);
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    setShowForgot(false);
     setLoading(true);
     const fd = new FormData(e.currentTarget);
     const result = await signIn("credentials", {
@@ -32,7 +29,6 @@ export function LoginForm() {
     setLoading(false);
     if (result?.error) {
       setError(t.account.invalidCredentials);
-      setShowForgot(true);
     } else {
       router.push("/account/tickets");
       router.refresh();
@@ -69,6 +65,9 @@ export function LoginForm() {
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                     {t.account.password}
                   </label>
+                  <Link href="/contact" className="text-xs text-brand hover:underline">
+                    {t.account.forgotPassword}
+                  </Link>
                 </div>
                 <input
                   id="password"
@@ -81,17 +80,8 @@ export function LoginForm() {
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm space-y-1">
-                  <p>{error}</p>
-                  {showForgot && (
-                    <p className="text-red-600">
-                      {t.account.forgotPassword}{" "}
-                      {t.account.forgotPasswordDesc}{" "}
-                      <Link href="/contact" className="underline font-medium">
-                        support@eventorbg.com
-                      </Link>
-                    </p>
-                  )}
+                <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+                  {error}
                 </div>
               )}
 
