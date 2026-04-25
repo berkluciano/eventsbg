@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check, MonitorSmartphone, Ticket, Megaphone, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import HeroBackground from "@/components/HeroBackground";
 
 export function AboutContent() {
   const { t } = useLanguage();
@@ -37,8 +38,9 @@ export function AboutContent() {
   return (
     <main className="flex-1 bg-gray-50">
       {/* Hero */}
-      <section className="bg-brand text-white py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative overflow-hidden bg-brand text-white py-16 md:py-24">
+        <HeroBackground tickets={false} />
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
             {t.about.heroTitle}
           </h1>

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { CheckCircle, Ticket, Megaphone, MonitorSmartphone } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import HeroBackground from "@/components/HeroBackground";
 import { submitPartnershipApplication } from "@/actions/partnership";
 import type { PartnershipState } from "@/actions/partnership";
 import { SubmitButton } from "@/components/SubmitButton";
@@ -37,8 +38,9 @@ export function WorkWithUsContent() {
   return (
     <main className="flex-1 bg-gray-50">
       {/* Hero */}
-      <section className="bg-brand text-white py-14 md:py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative overflow-hidden bg-brand text-white py-14 md:py-20">
+        <HeroBackground tickets={false} />
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4">{t.work.heroTitle}</h1>
           <p className="text-lg text-blue-100 leading-relaxed">{t.work.heroSubtitle}</p>
         </div>
