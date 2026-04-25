@@ -97,6 +97,7 @@ export function HomeContent({ events }: { events: Event[] }) {
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", marginBottom: 28 }}>
             <Link
               href="/events"
+              className="hover:-translate-y-1 active:scale-[0.97]"
               style={{
                 padding: "15px 28px",
                 borderRadius: 100,
@@ -109,22 +110,24 @@ export function HomeContent({ events }: { events: Event[] }) {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
+                transition: "transform 0.22s cubic-bezier(0.34,1.56,0.64,1)",
               }}
             >
               {t.home.browseEvents} <ArrowRight size={16} />
             </Link>
             <Link
               href="/work-with-us"
+              className="hover:-translate-y-1 hover:bg-white/10 active:scale-[0.97]"
               style={{
                 padding: "15px 28px",
                 borderRadius: 100,
                 fontSize: 15,
                 fontWeight: 600,
                 textDecoration: "none",
-                background: "rgba(255,255,255,0.06)",
                 color: "#fff",
                 border: "1px solid rgba(255,255,255,0.15)",
                 backdropFilter: "blur(10px)",
+                transition: "transform 0.22s cubic-bezier(0.34,1.56,0.64,1), background 0.18s ease",
               }}
             >
               {t.home.howItWorksBtn}
@@ -180,7 +183,7 @@ export function HomeContent({ events }: { events: Event[] }) {
           <p className="text-blue-100 mb-8">{t.home.ctaSubtitle}</p>
           <Link
             href="/events"
-            className="inline-flex items-center gap-2 bg-white text-brand font-semibold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
+            className="inline-flex items-center gap-2 bg-white text-brand font-semibold px-8 py-4 rounded-xl hover:bg-blue-50 hover:-translate-y-1 active:scale-[0.97] transition-[transform,background-color] duration-200 shadow-lg"
           >
             {t.home.browseEvents} <ArrowRight className="w-5 h-5" />
           </Link>
