@@ -7,7 +7,7 @@ import { EventForm } from "@/components/admin/EventForm";
 import { TicketTypeForm } from "@/components/admin/TicketTypeForm";
 import { EditableTicketType } from "@/components/admin/EditableTicketType";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
-import { formatCents } from "@/lib/utils";
+import { formatCents, toSofiaDatetimeLocal } from "@/lib/utils";
 import type { Metadata } from "next";
 
 interface PageProps {
@@ -98,8 +98,8 @@ export default async function EditEventPage({ params }: PageProps) {
             description: event.description,
             city: event.city,
             venue: event.venue,
-            startsAt: event.startsAt.toISOString(),
-            endsAt: event.endsAt?.toISOString(),
+            startsAt: toSofiaDatetimeLocal(event.startsAt),
+            endsAt: toSofiaDatetimeLocal(event.endsAt),
             squareImage: event.squareImage,
             published: event.published,
             parentId: event.parentId,

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { slugify } from "@/lib/utils";
+import { slugify, fromSofiaDatetimeLocal } from "@/lib/utils";
 
 const eventSchema = z.object({
   name: z.string().min(2).max(200),
@@ -63,8 +63,8 @@ export async function createEvent(formData: FormData) {
       description,
       city,
       venue,
-      startsAt: new Date(startsAt),
-      endsAt: endsAt ? new Date(endsAt) : null,
+      startsAt: fromSofiaDatetimeLocal(startsAt),
+      endsAt: endsAt ? fromSofiaDatetimeLocal(endsAt) : null,
       squareImage: squareImage || null,
       published: published ?? false,
       parentId: parentId || null,
@@ -105,8 +105,8 @@ export async function updateEvent(id: string, formData: FormData) {
       description,
       city,
       venue,
-      startsAt: new Date(startsAt),
-      endsAt: endsAt ? new Date(endsAt) : null,
+      startsAt: fromSofiaDatetimeLocal(startsAt),
+      endsAt: endsAt ? fromSofiaDatetimeLocal(endsAt) : null,
       squareImage: squareImage || null,
       published: published ?? false,
       parentId: parentId || null,
