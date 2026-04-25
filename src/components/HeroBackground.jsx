@@ -196,6 +196,18 @@ export default function HeroBackground() {
           position: absolute; inset: 0; opacity: 0.06; mix-blend-mode: overlay;
           background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='5'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
         }
+        /* Mobile: keep only 3 tickets, shrink them */
+        @media (max-width: 639px) {
+          .hb-ticket-wrap:nth-child(n+4) { display: none; }
+          .hb-ticket-wrap { opacity: 0.35 !important; transform: translate(-50%, -50%) scale(calc(var(--scale) * 0.65)); }
+        }
+
+        /* Small tablet: keep 5 tickets, slightly smaller */
+        @media (min-width: 640px) and (max-width: 1023px) {
+          .hb-ticket-wrap:nth-child(n+6) { display: none; }
+          .hb-ticket-wrap { transform: translate(-50%, -50%) scale(calc(var(--scale) * 0.8)); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .hb-orb, .hb-ticket-wrap, .hb-speck { animation: none !important; }
         }
