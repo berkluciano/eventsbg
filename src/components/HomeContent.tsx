@@ -114,7 +114,7 @@ export function HomeContent({ events }: { events: Event[] }) {
               {t.home.browseEvents} <ArrowRight size={16} />
             </Link>
             <Link
-              href="/how-it-works"
+              href="/work-with-us"
               style={{
                 padding: "15px 28px",
                 borderRadius: 100,

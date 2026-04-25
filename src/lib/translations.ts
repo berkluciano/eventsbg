@@ -13,7 +13,7 @@ export const translations = {
       heroSubtitle:
         "Разгледайте събитията, платете сигурно и ние се грижим за останалото.",
       browseEvents: "Виж събитията",
-      howItWorksBtn: "Как работи",
+      howItWorksBtn: "Работи с нас",
       upcomingEvents: "Предстоящи събития",
       upcomingSubtitle: "Осигурете си място преди да се изчерпят",
       viewAll: "Виж всички",
@@ -267,7 +267,7 @@ export const translations = {
       heroSubtitle:
         "Browse events, pay securely, and we handle the rest.",
       browseEvents: "Browse Events",
-      howItWorksBtn: "How It Works",
+      howItWorksBtn: "Work With Us",
       upcomingEvents: "Upcoming Events",
       upcomingSubtitle: "Secure your spot before it sells out",
       viewAll: "View all",
