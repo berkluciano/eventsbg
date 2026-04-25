@@ -125,7 +125,7 @@ export default function FlowDivider() {
           position: relative;
           width: 100%;
           height: 240px;
-          background: transparent;
+          background: none;
           overflow: hidden;
           pointer-events: none;
         }

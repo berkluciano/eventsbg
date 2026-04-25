@@ -27,11 +27,16 @@ export function HomeContent({ events }: { events: Event[] }) {
       <section className="relative overflow-hidden min-h-screen flex flex-col text-white">
         <HeroBackground />
 
-        {/* bottom fade into FlowDivider */}
+        {/* bottom fade */}
         <div
           className="absolute bottom-0 left-0 right-0 z-[5] pointer-events-none"
           style={{ height: 220, background: "linear-gradient(to bottom, transparent 0%, #050f2e 100%)" }}
         />
+
+        {/* animated lines on top of the fade */}
+        <div className="absolute bottom-0 left-0 right-0 z-[6] pointer-events-none">
+          <FlowDivider />
+        </div>
 
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 py-16 md:py-24">
           {/* kicker */}
@@ -167,9 +172,6 @@ export function HomeContent({ events }: { events: Event[] }) {
           </div>
         </div>
       </section>
-
-      {/* ── Flow Divider ── */}
-      <FlowDivider />
 
       {/* ── Trending Events Row ── */}
       {events.length > 0 && (
