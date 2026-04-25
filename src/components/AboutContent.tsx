@@ -39,7 +39,7 @@ export function AboutContent() {
     <main className="flex-1 bg-gray-50">
       {/* Hero */}
       <section className="relative overflow-hidden bg-brand text-white py-16 md:py-24">
-        <HeroBackground tickets={false} />
+        <HeroBackground />
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
             {t.about.heroTitle}

@@ -11,7 +11,7 @@ async function getFeaturedEvents() {
     include: {
       ticketTypes: {
         orderBy: { priceCents: "asc" },
-        take: 1,
+        select: { priceCents: true, capacity: true, sold: true },
       },
     },
   });

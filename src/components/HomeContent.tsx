@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { EventCard } from "@/components/EventCard";
 import HeroBackground from "@/components/HeroBackground";
+import { EventsRow } from "@/components/EventsRow";
 
 interface Event {
   id: string;
@@ -14,7 +14,7 @@ interface Event {
   venue: string;
   startsAt: Date;
   squareImage: string | null;
-  ticketTypes: { priceCents: number }[];
+  ticketTypes: { priceCents: number; capacity: number | null; sold: number }[];
 }
 
 export function HomeContent({ events }: { events: Event[] }) {
@@ -22,79 +22,159 @@ export function HomeContent({ events }: { events: Event[] }) {
 
   return (
     <main className="flex-1">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand via-brand-800 to-brand-700 text-white">
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden min-h-screen flex flex-col text-white">
         <HeroBackground />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 text-sm mb-6">
-              <Star className="w-4 h-4 text-yellow-300" />
-              {t.home.badge}
-            </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
-              {t.home.heroTitle}
-              <br />
-              <span className="text-blue-200">{t.home.heroTitleHighlight}</span>
-            </h1>
-            <p className="text-lg md:text-xl text-blue-100 mb-8 leading-relaxed">
-              {t.home.heroSubtitle}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="/events"
-                className="inline-flex items-center justify-center gap-2 bg-white text-brand font-semibold px-8 py-4 rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
-              >
-                {t.home.browseEvents} <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
+
+        {/* bottom fade into next section */}
+        <div
+          className="absolute bottom-0 left-0 right-0 z-[5] pointer-events-none"
+          style={{ height: 200, background: "linear-gradient(to bottom, transparent 0%, #050f2e 100%)" }}
+        />
+
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 py-16 md:py-24">
+          {/* kicker */}
+          <div
+            style={{
+              fontFamily: 'ui-monospace, "JetBrains Mono", Menlo, monospace',
+              fontSize: 12,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "rgba(180,210,255,0.85)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 12,
+              marginBottom: 24,
+            }}
+          >
+            <span style={{ width: 28, height: 1, background: "linear-gradient(to right, transparent, rgba(180,210,255,0.5))", display: "inline-block" }} />
+            {t.home.badge}
+            <span style={{ width: 28, height: 1, background: "linear-gradient(to left, transparent, rgba(180,210,255,0.5))", display: "inline-block" }} />
+          </div>
+
+          {/* headline */}
+          <h1
+            style={{
+              fontSize: "clamp(44px, 7vw, 88px)",
+              lineHeight: 1,
+              letterSpacing: "-0.038em",
+              fontWeight: 700,
+              maxWidth: 980,
+              marginBottom: 22,
+            }}
+          >
+            {t.home.heroTitle}
+            <br />
+            <em
+              style={{
+                fontFamily: '"Fraunces", Georgia, serif',
+                fontStyle: "italic",
+                fontWeight: 500,
+                background: "linear-gradient(120deg,#fff 0%,#93c5fd 50%,#fff 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              {t.home.heroTitleHighlight}
+            </em>
+          </h1>
+
+          {/* subtitle */}
+          <p
+            style={{
+              fontSize: 18,
+              lineHeight: 1.55,
+              color: "rgba(255,255,255,0.72)",
+              maxWidth: 580,
+              margin: "0 auto 32px",
+            }}
+          >
+            {t.home.heroSubtitle}
+          </p>
+
+          {/* CTA buttons */}
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", marginBottom: 28 }}>
+            <Link
+              href="/events"
+              style={{
+                padding: "15px 28px",
+                borderRadius: 100,
+                fontSize: 15,
+                fontWeight: 600,
+                textDecoration: "none",
+                background: "linear-gradient(135deg,#4a90ff 0%,#2563eb 100%)",
+                color: "#fff",
+                boxShadow: "0 12px 32px rgba(37,99,235,0.5), 0 0 0 1px rgba(255,255,255,0.1) inset",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              {t.home.browseEvents} <ArrowRight size={16} />
+            </Link>
+            <Link
+              href="/how-it-works"
+              style={{
+                padding: "15px 28px",
+                borderRadius: 100,
+                fontSize: 15,
+                fontWeight: 600,
+                textDecoration: "none",
+                background: "rgba(255,255,255,0.06)",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.15)",
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              {t.home.howItWorksBtn}
+            </Link>
+          </div>
+
+          {/* trust strip */}
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 18,
+              padding: "10px 18px",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 100,
+              fontSize: 13,
+              color: "rgba(255,255,255,0.7)",
+              backdropFilter: "blur(10px)",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, whiteSpace: "nowrap" }}>
+              <span style={{ color: "#fbbf24" }}>★</span>
+              <strong style={{ color: "#fff", fontWeight: 700 }}>{t.home.trustRating}</strong>
+            </span>
+            <span style={{ width: 3, height: 3, borderRadius: "50%", background: "rgba(255,255,255,0.25)" }} />
+            <span style={{ whiteSpace: "nowrap" }}>
+              <strong style={{ color: "#fff", fontWeight: 700 }}>{t.home.trustTickets}</strong>
+            </span>
+            <span style={{ width: 3, height: 3, borderRadius: "50%", background: "rgba(255,255,255,0.25)" }} />
+            <span style={{ whiteSpace: "nowrap" }}>🔒 {t.home.trustSecure}</span>
+            <span style={{ width: 3, height: 3, borderRadius: "50%", background: "rgba(255,255,255,0.25)" }} />
+            <span style={{ whiteSpace: "nowrap" }}>{t.home.trustResponse}</span>
           </div>
         </div>
       </section>
 
-      {/* Featured Events */}
+      {/* ── Trending Events Row ── */}
       {events.length > 0 && (
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  {t.home.upcomingEvents}
-                </h2>
-                <p className="text-gray-500 mt-1">{t.home.upcomingSubtitle}</p>
-              </div>
-              <Link
-                href="/events"
-                className="hidden sm:inline-flex items-center gap-1 text-brand font-medium hover:underline text-sm"
-              >
-                {t.home.viewAll} <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {events.map((event) => (
-                <EventCard
-                  key={event.id}
-                  id={event.id}
-                  name={event.name}
-                  slug={event.slug}
-                  city={event.city}
-                  venue={event.venue}
-                  startsAt={event.startsAt}
-                  squareImage={event.squareImage}
-                  minPriceCents={event.ticketTypes[0]?.priceCents}
-                />
-              ))}
-            </div>
-            <div className="mt-8 text-center sm:hidden">
-              <Link href="/events" className="text-brand font-medium hover:underline">
-                {t.home.viewAll} →
-              </Link>
-            </div>
-          </div>
-        </section>
+        <EventsRow
+          events={events}
+          title={t.home.trendingTitle}
+          eyebrow={t.home.trendingEyebrow}
+        />
       )}
 
-      {/* CTA */}
-      <section className="bg-brand py-16">
+      {/* ── CTA ── */}
+      <section className="bg-[#050f2e] py-16 border-t border-white/5">
         <div className="max-w-3xl mx-auto px-4 text-center text-white">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">{t.home.ctaTitle}</h2>
           <p className="text-blue-100 mb-8">{t.home.ctaSubtitle}</p>
