@@ -50,6 +50,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/work-with-us" className="hover:text-white transition-colors">
+                  {t.footer.workWithUs}
+                </Link>
+              </li>
+              <li>
                 <Link href="/contact" className="hover:text-white transition-colors">
                   {t.footer.contactUs}
                 </Link>
