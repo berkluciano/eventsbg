@@ -24,7 +24,7 @@ export function HomeContent({ events }: { events: Event[] }) {
   return (
     <main className="flex-1">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden min-h-screen flex flex-col text-white">
+      <section className="relative overflow-hidden min-h-[calc(100vh-4rem)] flex flex-col text-white">
         <HeroBackground />
 
         {/* bottom fade */}
