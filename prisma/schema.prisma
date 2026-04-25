@@ -80,4 +80,5 @@ enum OrderStatus {
   PENDING_PURCHASE
   PURCHASED
   FAILED
+  REFUNDED
 }

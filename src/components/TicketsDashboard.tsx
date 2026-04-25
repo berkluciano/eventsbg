@@ -6,7 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { formatDate, formatCents } from "@/lib/utils";
 import { signOut } from "next-auth/react";
 
-type OrderStatus = "PENDING_PURCHASE" | "PURCHASED" | "FAILED";
+type OrderStatus = "PENDING_PURCHASE" | "PURCHASED" | "FAILED" | "REFUNDED";
 
 interface OrderRow {
   id: string;
@@ -29,6 +29,7 @@ const statusStyles: Record<OrderStatus, string> = {
   PENDING_PURCHASE: "bg-amber-50 text-amber-700 border border-amber-200",
   PURCHASED: "bg-green-50 text-green-700 border border-green-200",
   FAILED: "bg-red-50 text-red-700 border border-red-200",
+  REFUNDED: "bg-purple-50 text-purple-700 border border-purple-200",
 };
 
 export function TicketsDashboard({ orders, userName }: Props) {
@@ -37,6 +38,7 @@ export function TicketsDashboard({ orders, userName }: Props) {
   function statusLabel(s: OrderStatus) {
     if (s === "PURCHASED") return t.account.statusPurchased;
     if (s === "FAILED") return t.account.statusFailed;
+    if (s === "REFUNDED") return t.account.statusRefunded;
     return t.account.statusPending;
   }
 

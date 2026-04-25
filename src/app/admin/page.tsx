@@ -44,6 +44,10 @@ const statusConfig = {
     label: "Failed",
     className: "bg-red-100 text-red-700 border border-red-200",
   },
+  REFUNDED: {
+    label: "Refunded",
+    className: "bg-purple-100 text-purple-700 border border-purple-200",
+  },
 } as const;
 
 export default async function AdminDashboard() {
@@ -162,7 +166,7 @@ type OrderRow = {
   customerEmail: string;
   qty: number;
   totalCents: number;
-  status: "PENDING_PURCHASE" | "PURCHASED" | "FAILED";
+  status: "PENDING_PURCHASE" | "PURCHASED" | "FAILED" | "REFUNDED";
   createdAt: Date;
   event: { name: string };
   ticketType: { name: string };

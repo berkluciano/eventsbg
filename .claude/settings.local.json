@@ -15,7 +15,8 @@
       "Bash(xargs sed *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(del \"C:\\\\Users\\\\CYRO\\\\eventsbg\\\\src\\\\components\\\\HeroBackground.module.css\")"
     ]
   }
 }

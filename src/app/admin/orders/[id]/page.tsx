@@ -12,9 +12,10 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  RotateCcw,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { markOrderPurchased, markOrderFailed } from "@/actions/orders";
+import { markOrderPurchased, markOrderFailed, refundOrder } from "@/actions/orders";
 import { SubmitButton } from "@/components/SubmitButton";
 import { formatCents, formatDateTime } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -46,6 +47,7 @@ export default async function OrderDetailPage({ params }: PageProps) {
 
   const markPurchasedWithId = markOrderPurchased.bind(null, id);
   const markFailedWithId = markOrderFailed.bind(null, id);
+  const refundWithId = refundOrder.bind(null, id);
 
   const ticketPrice = order.totalCents - order.serviceFeeCents;
 
@@ -67,6 +69,12 @@ export default async function OrderDetailPage({ params }: PageProps) {
       label: "Failed",
       className: "bg-red-100 text-red-700 border-red-300",
       iconColor: "text-red-500",
+    },
+    REFUNDED: {
+      icon: RotateCcw,
+      label: "Refunded",
+      className: "bg-purple-100 text-purple-700 border-purple-300",
+      iconColor: "text-purple-500",
     },
   } as const;
 
@@ -239,15 +247,26 @@ export default async function OrderDetailPage({ params }: PageProps) {
             </div>
           </form>
 
-          <form action={markFailedWithId as unknown as (fd: FormData) => void} className="mt-3">
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 text-sm text-red-500 hover:text-red-700 font-medium"
-            >
-              <XCircle className="w-4 h-4" />
-              Mark as Failed
-            </button>
-          </form>
+          <div className="flex gap-4 mt-3">
+            <form action={markFailedWithId as unknown as (fd: FormData) => void}>
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 text-sm text-red-500 hover:text-red-700 font-medium"
+              >
+                <XCircle className="w-4 h-4" />
+                Mark as Failed
+              </button>
+            </form>
+            <form action={refundWithId as unknown as (fd: FormData) => void}>
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-800 font-medium"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Refund &amp; Notify Customer
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
@@ -268,8 +287,29 @@ export default async function OrderDetailPage({ params }: PageProps) {
           <XCircle className="w-6 h-6 text-red-500 flex-shrink-0" />
           <div>
             <div className="font-semibold text-red-800">Order failed</div>
-            <div className="text-sm text-red-700">
+            <div className="text-sm text-red-700 mb-3">
               This order was marked as failed. Contact the customer at {order.customerEmail}.
+            </div>
+            <form action={refundWithId as unknown as (fd: FormData) => void}>
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Issue Refund &amp; Notify Customer
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {order.status === "REFUNDED" && (
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-5 flex items-center gap-3">
+          <RotateCcw className="w-6 h-6 text-purple-500 flex-shrink-0" />
+          <div>
+            <div className="font-semibold text-purple-800">Order refunded</div>
+            <div className="text-sm text-purple-700">
+              A full refund of {formatCents(order.totalCents)} was issued and the customer was notified at {order.customerEmail}.
             </div>
           </div>
         </div>
