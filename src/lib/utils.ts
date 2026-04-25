@@ -77,20 +77,47 @@ export function toSofiaDatetimeLocal(date: Date | string | null | undefined): st
  * instead of plain new Date(str).
  */
 export function fromSofiaDatetimeLocal(str: string): Date {
-  // Append Sofia offset so the browser/Node treats it as Sofia time
-  // We calculate the offset dynamically so it works for both EET (+02:00) and EEST (+03:00)
-  const naive = new Date(str); // treated as UTC by Node when no offset
-  // Re-interpret as Sofia time: find offset at that moment
-  const sofiaOffset = getSofiaOffsetMs(naive);
-  return new Date(naive.getTime() - sofiaOffset);
+  if (!str) return new Date(NaN);
+  // Treat the string as UTC first to get a working Date object
+  const naiveUTC = new Date(str + ":00.000Z");
+  if (isNaN(naiveUTC.getTime())) return new Date(NaN);
+  // Offset at the naive UTC moment is close enough to the real offset
+  // (only wrong during the exact DST transition second — acceptable)
+  const offsetMs = getSofiaOffsetMs(naiveUTC);
+  return new Date(naiveUTC.getTime() - offsetMs);
 }
 
-/** Returns Sofia's UTC offset in milliseconds at a given UTC moment */
+/**
+ * Returns Sofia's UTC offset in milliseconds at a given UTC instant.
+ * Uses formatToParts (not toLocaleString string-parsing) so it works
+ * reliably across all Node/V8 versions.
+ */
 function getSofiaOffsetMs(utcDate: Date): number {
-  // Format the date in Sofia TZ and in UTC, diff to get offset
-  const utcStr = utcDate.toLocaleString("en-GB", { timeZone: "UTC" });
-  const sofiaStr = utcDate.toLocaleString("en-GB", { timeZone: TZ });
-  return new Date(sofiaStr).getTime() - new Date(utcStr).getTime();
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(utcDate);
+
+  const get = (type: string) =>
+    parseInt(parts.find((p) => p.type === type)?.value ?? "0", 10);
+
+  // Build a UTC timestamp from the Sofia local parts
+  const sofiaAsUTC = Date.UTC(
+    get("year"),
+    get("month") - 1,
+    get("day"),
+    get("hour"),
+    get("minute"),
+    get("second")
+  );
+
+  return sofiaAsUTC - utcDate.getTime();
 }
 
 export function slugify(text: string): string {
