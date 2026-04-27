@@ -84,12 +84,13 @@ enum OrderStatus {
 }
 
 model InboundEmail {
-  id        String   @id @default(cuid())
-  from      String
-  to        String
-  subject   String
-  text      String?  @db.Text
-  html      String?  @db.Text
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  from       String
+  to         String
+  subject    String
+  text       String?  @db.Text
+  html       String?  @db.Text
+  rawPayload Json?
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }

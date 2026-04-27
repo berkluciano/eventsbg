@@ -12,11 +12,29 @@ export async function POST(req: NextRequest) {
     const toRaw = data.to;
     const to: string = Array.isArray(toRaw) ? toRaw[0] : ((toRaw as string) ?? "");
     const subject: string = (data.subject as string) ?? "(no subject)";
-    const text: string | null = (data.text as string) ?? null;
-    const html: string | null = (data.html as string) ?? null;
+
+    // Try every possible field name Resend might use for the body
+    const text: string | null =
+      (data.text as string) ??
+      (data.plain_text as string) ??
+      (data.body_plain as string) ??
+      (data.body as string) ??
+      null;
+
+    const html: string | null =
+      (data.html as string) ??
+      (data.body_html as string) ??
+      null;
 
     await prisma.inboundEmail.create({
-      data: { from, to, subject, text, html },
+      data: {
+        from,
+        to,
+        subject,
+        text,
+        html,
+        rawPayload: body, // store full raw payload for debugging
+      },
     });
 
     return NextResponse.json({ ok: true });

@@ -50,12 +50,23 @@ function EmailRow({
     to: string;
     subject: string;
     text: string | null;
+    rawPayload: unknown;
     read: boolean;
     createdAt: Date;
   };
 }) {
   const markRead = markEmailRead.bind(null, email.id);
-  const preview = email.text?.slice(0, 120).replace(/\n/g, " ") ?? "";
+
+  // Try to extract body from rawPayload if text is missing
+  const raw = email.rawPayload as Record<string, unknown> | null;
+  const rawData = (raw?.data ?? raw) as Record<string, unknown> | null;
+  const bodyText: string =
+    email.text ??
+    (rawData?.text as string) ??
+    (rawData?.plain_text as string) ??
+    "";
+
+  const preview = bodyText.slice(0, 120).replace(/\n/g, " ");
 
   return (
     <details className="group">
@@ -76,7 +87,7 @@ function EmailRow({
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <span className={`text-sm ${email.read ? "text-gray-600" : "font-semibold text-gray-900"}`}>
-              {email.from}
+              {email.from || "(unknown sender)"}
             </span>
             <span className="text-xs text-gray-400 flex-shrink-0">
               {new Date(email.createdAt).toLocaleString("en-GB", {
@@ -100,13 +111,23 @@ function EmailRow({
       </summary>
 
       {/* Expanded body */}
-      <div className="px-5 pb-5 pt-1 ml-7 border-t border-gray-100 bg-gray-50">
-        <div className="text-xs text-gray-400 mb-3">
-          To: {email.to}
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-          {email.text ?? "(no plain-text body)"}
-        </div>
+      <div className="px-5 pb-5 pt-1 ml-7 border-t border-gray-100 bg-gray-50 space-y-3">
+        <div className="text-xs text-gray-400">To: {email.to}</div>
+
+        {bodyText ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-4 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+            {bodyText}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-xs text-amber-600 font-medium">
+              No body content received from Resend — showing raw payload:
+            </p>
+            <pre className="bg-white rounded-lg border border-gray-200 p-4 text-xs text-gray-600 overflow-x-auto whitespace-pre-wrap">
+              {JSON.stringify(rawData ?? raw, null, 2)}
+            </pre>
+          </div>
+        )}
       </div>
     </details>
   );
