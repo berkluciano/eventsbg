@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
-import { LayoutDashboard, CalendarDays, ShoppingBag } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Inbox } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -36,6 +36,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             <CalendarDays className="w-4 h-4" />
             Events
+          </Link>
+          <Link
+            href="/admin/inbox"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-blue-100 hover:bg-white/10 hover:text-white transition-colors"
+          >
+            <Inbox className="w-4 h-4" />
+            Inbox
           </Link>
         </nav>
 
