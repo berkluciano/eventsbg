@@ -75,7 +75,14 @@ export default async function AdminEventsPage() {
                       {event.venue}, {event.city}
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-gray-600">{formatDate(event.startsAt)}</td>
+                  <td className="px-5 py-4 text-gray-600">
+                    {formatDate(event.startsAt)}
+                    {event.startsAt < new Date() && (
+                      <span className="ml-2 text-xs font-medium px-1.5 py-0.5 rounded bg-gray-100 text-gray-400">
+                        Past
+                      </span>
+                    )}
+                  </td>
                   <td className="px-5 py-4 text-gray-600">{event._count.ticketTypes}</td>
                   <td className="px-5 py-4 text-gray-600">{event._count.orders}</td>
                   <td className="px-5 py-4">

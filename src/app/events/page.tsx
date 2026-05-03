@@ -14,6 +14,7 @@ async function getEvents(query?: string, city?: string) {
     where: {
       published: true,
       parentId: null,
+      startsAt: { gte: new Date() },
       ...(query
         ? {
             OR: [
@@ -34,7 +35,7 @@ async function getEvents(query?: string, city?: string) {
 
 async function getCities() {
   const rows = await prisma.event.findMany({
-    where: { published: true, parentId: null },
+    where: { published: true, parentId: null, startsAt: { gte: new Date() } },
     select: { city: true },
     distinct: ["city"],
     orderBy: { city: "asc" },

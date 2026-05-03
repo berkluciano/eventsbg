@@ -5,7 +5,7 @@ import { HomeContent } from "@/components/HomeContent";
 
 async function getFeaturedEvents() {
   return prisma.event.findMany({
-    where: { published: true, parentId: null },
+    where: { published: true, parentId: null, startsAt: { gte: new Date() } },
     orderBy: { startsAt: "asc" },
     take: 6,
     include: {
