@@ -11,7 +11,7 @@ interface PageProps {
 }
 
 async function getEvent(slug: string) {
-  return prisma.event.findUnique({
+  const event = await prisma.event.findUnique({
     where: { slug, published: true },
     include: {
       ticketTypes: { orderBy: { priceCents: "asc" } },
@@ -33,6 +33,10 @@ async function getEvent(slug: string) {
       },
     },
   });
+  if (!event) return null;
+  const endDate = event.endsAt ?? event.startsAt;
+  if (endDate < new Date()) return null;
+  return event;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
